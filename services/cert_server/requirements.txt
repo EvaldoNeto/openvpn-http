@@ -1,0 +1,5 @@
+Flask==1.0.2
+Flask-RESTful==0.3.7
+Flask-Testing==0.7.1
+coverage==4.5.3
+flake8==3.7.7

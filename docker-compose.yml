@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+
+  cert-server:
+    build:
+      context:  ./services/cert_server
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/usr/certs
+    ports:
+      - 5001:5000
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - SECRET_KEY=$SECRET_KEY

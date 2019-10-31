@@ -12,7 +12,7 @@ class OvpnPing(Resource):
     def get(self):
         response_object = {
             'status': 'success',
-            'message': 'pong!'
+            'message': 'All men must serve'
         }
         return response_object, 200
 

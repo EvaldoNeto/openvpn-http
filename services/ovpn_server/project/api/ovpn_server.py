@@ -8,7 +8,7 @@ ovpn_server_blueprint = Blueprint('ovpn-server', __name__)
 api = Api(ovpn_server_blueprint)
 
 
-class CertPing(Resource):
+class OvpnPing(Resource):
     def get(self):
         response_object = {
             'status': 'success',
@@ -17,4 +17,4 @@ class CertPing(Resource):
         return response_object, 200
 
 
-api.add_resource(CertPing, '/ovpn/ping')
+api.add_resource(OvpnPing, '/ovpn/ping')

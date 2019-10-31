@@ -14,7 +14,11 @@ docker-compose up -d --build
 docker-compose exec cert-server python manage.py test
 inspect $? cert_server
 docker-compose exec cert-server flake8 project
-inspect $? users-lint
+inspect $? cert-server-lint
+docker-compose exec ovpn-server python manage.py test
+inspect $? ovpn_server
+docker-compose exec ovpn-server flake8 project
+inspect $? ovpn-server-lint
 docker-compose down
 
 # return proper code

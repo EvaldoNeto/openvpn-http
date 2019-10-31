@@ -10,7 +10,6 @@ WORKDIR /usr/src/certs/EasyRSA-3.0.4
 RUN ./easyrsa init-pki && \
     ./easyrsa --batch build-ca nopass
 
-RUN ls -l
 
 # installing python app
 FROM python:3.7.2-alpine

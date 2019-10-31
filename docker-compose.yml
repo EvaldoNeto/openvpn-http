@@ -14,3 +14,13 @@ services:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
       - SECRET_KEY=$SECRET_KEY
+
+  ovpn-server:
+    build:
+      context: ./services/ovpn_server
+      dockerfile: Dockerfile
+    ports:
+      - 5002:5000
+    environment:
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig

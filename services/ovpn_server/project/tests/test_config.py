@@ -1,4 +1,4 @@
-# services/cert_server/project/tests/test_config.py
+# services/ovpn_server/project/tests/test_config.py
 
 
 import unittest

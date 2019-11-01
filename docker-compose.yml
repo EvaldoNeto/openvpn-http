@@ -19,6 +19,8 @@ services:
     build:
       context: ./services/ovpn_server
       dockerfile: Dockerfile
+    volumes:
+      - ./services/ovpn_server/data:/usr/certs
     ports:
       - 5002:5000
     environment:

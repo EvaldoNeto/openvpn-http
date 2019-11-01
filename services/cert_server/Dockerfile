@@ -34,6 +34,8 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 ENV EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
 ENV REQ_PATH=/usr/certs
 ENV EASYRSA_PKI=$EASYRSA_PATH/pki
+ENV EASYRSA_BATCH=1
+
 RUN ln -s $EASYRSA_PATH/openssl-easyrsa.cnf /usr/bin/openssl-easyrsa.cnf && \
     ln -s $EASYRSA_PATH/easyrsa /usr/bin/easyrsa && \
     ln -s $EASYRSA_PATH/x509-types /usr/bin/x509-types

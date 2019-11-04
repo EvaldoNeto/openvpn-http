@@ -42,3 +42,12 @@ class TestCertGen(BaseTestCase):
                                         '/test_client.req'))
         self.assertFalse(os.path.isfile(req_path + '/reqs/test_client.req'))
         self.assertFalse(os.path.isfile(req_path + '/issued/test_client.crt'))
+
+    """
+    def test_gen_dh(self):
+        \"""Tests if the Diffie-Hellman certificate is generated""\"
+        resp = EasyRSA().gen_dh()
+        req_path = os.environ.get('EASYRSA_PKI')
+        self.assertIn('Success', resp)
+        self.assertTrue(os.path.isfile(req_path + '/dh.pem'))
+    """

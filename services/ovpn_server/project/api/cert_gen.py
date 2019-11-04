@@ -51,3 +51,11 @@ class EasyRSA:
         except subprocess.CalledProcessError as e:
             return 'Fail to build ca certificate ' + str(e)
         return 'Success, ca certificate created'
+
+    def gen_dh(self):
+        cmd = 'easyrsa --batch gen-dh'
+        try:
+            subprocess.check_output(cmd.split(' '))
+        except subprocess.CalledProcessError as e:
+            return 'Fail to generate Diffie-Hellman certificate ' + str(e)
+        return 'Success, Diffie-Hellman certificate generated'

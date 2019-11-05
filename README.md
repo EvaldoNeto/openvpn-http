@@ -57,4 +57,4 @@ Along with the commit add the test coverage resume for the service you modified.
 # server configuration
 
 To configure the ovpn server change the server.conf file on services/ovpn-server folder with the settings you need
-Remember to update the base.conf file to match the alterations, that file will be used to create your client .ovpn file to connect to your server.
+Remember to update the base.conf file to match the alterations, that file will be used to create your client .ovpn file to connect to your server

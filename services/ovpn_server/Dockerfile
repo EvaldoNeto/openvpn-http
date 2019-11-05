@@ -23,12 +23,10 @@ RUN apk update && \
   	bash && \
     apk add --no-cache openssl
 
+
 WORKDIR /usr/src/app
 COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
-
-COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
-RUN chmod +x /usr/src/app/entrypoint.sh
 
 ENV EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
 ENV REQ_PATH=/usr/certs
@@ -42,5 +40,8 @@ RUN ln -s $EASYRSA_PATH/openssl-easyrsa.cnf /usr/bin/openssl-easyrsa.cnf && \
 COPY --from=builder /usr/src/app/EasyRSA-3.0.4/ /usr/src/certs/EasyRSA-3.0.4/
 COPY --from=builder /etc/openvpn/ /etc/openvpn/
 COPY . /usr/src/app
+
+COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
 
 CMD ["/usr/src/app/entrypoint.sh"]

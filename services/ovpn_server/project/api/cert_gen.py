@@ -65,7 +65,7 @@ class EasyRSA:
         try:
             subprocess.check_output(cmd.split(' '))
         except subprocess.CalledProcessError as e:
-            return 'Fail to generate .crt file ' + str(e) 
+            return 'Fail to generate .crt file ' + str(e)
         return 'Success, .crt file generated for ' + file_name
 
     def ovpn_gen(self, crt_path, key_path, ca_path):
@@ -79,9 +79,11 @@ class EasyRSA:
         key_file = open(key_path)
         ca_file = open(ca_path)
         base_conf_file = open('/usr/src/app/base.conf')
-        ovpn_content = base_conf_file.read() + '<ca>\n' + ca_file.read() + \
-                        '</ca>\n<cert>\n' + crt_file.read() + '</cert>\n<key>\n' + \
-                        key_file.read() + '</key>\n'
-        file_name = crt_path.split('/')[len(crt_path.split('/')) - 1].split('.')[0]
+        ovpn_content = base_conf_file.read() + '<ca>\n' + ca_file.read()
+        ovpn_content = ovpn_content + '</ca>\n<cert>\n' + crt_file.read()
+        ovpn_content = ovpn_content + '</cert>\n<key>\n' + key_file.read()
+        ovpn_content = ovpn_content + '</key>\n'
+        file_name = crt_path.split('/')[len(crt_path.split('/')) - 1]
+        file_name = file_name.split('.')[0]
         output = open('/usr/src/app/' + file_name + '.ovpn', 'w')
         output.write(ovpn_content)

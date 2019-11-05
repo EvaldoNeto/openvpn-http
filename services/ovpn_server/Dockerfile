@@ -9,7 +9,8 @@ WORKDIR /usr/src/app/EasyRSA-3.0.4
 RUN ./easyrsa init-pki && \
     ./easyrsa --batch gen-req server nopass && \
     cp ./pki/private/server.key /etc/openvpn/
-
+COPY ./server.conf /etc/openvpn/
+COPY ./base.conf /usr/src/app
 
 FROM python:3.7.2-alpine
 RUN apk update && \

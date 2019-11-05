@@ -59,3 +59,31 @@ class EasyRSA:
         except subprocess.CalledProcessError as e:
             return 'Fail to generate Diffie-Hellman certificate ' + str(e)
         return 'Success, Diffie-Hellman certificate generated'
+
+    def sign_req(self, file_name):
+        cmd = 'easyrsa --batch sign-req client ' + file_name
+        try:
+            subprocess.check_output(cmd.split(' '))
+        except subprocess.CalledProcessError as e:
+            return 'Fail to generate .crt file ' + str(e)
+        return 'Success, .crt file generated for ' + file_name
+
+    def ovpn_gen(self, crt_path, key_path, ca_path):
+        """
+        Generates the .ovpn file based on the ,crt and .key files
+        :param crt_path: the full path to the .crt file
+        :param key_path: the full path to the .key file
+        :param ca_path: the full path to the ca.crt file
+        """
+        crt_file = open(crt_path)
+        key_file = open(key_path)
+        ca_file = open(ca_path)
+        base_conf_file = open('/usr/src/app/base.conf')
+        ovpn_content = base_conf_file.read() + '<ca>\n' + ca_file.read()
+        ovpn_content = ovpn_content + '</ca>\n<cert>\n' + crt_file.read()
+        ovpn_content = ovpn_content + '</cert>\n<key>\n' + key_file.read()
+        ovpn_content = ovpn_content + '</key>\n'
+        file_name = crt_path.split('/')[len(crt_path.split('/')) - 1]
+        file_name = file_name.split('.')[0]
+        output = open('/usr/src/app/' + file_name + '.ovpn', 'w')
+        output.write(ovpn_content)

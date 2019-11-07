@@ -7,13 +7,14 @@ services:
       context:  ./services/cert_server
       dockerfile: Dockerfile
     volumes:
-      - ./data:/usr/certs
+      - ./services/cert_server/data:/usr/certs
     ports:
       - 5001:5000
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
       - SECRET_KEY=$SECRET_KEY
+      - OVPN_SERVER_URL=http://ovpn-server:5000
 
   ovpn-server:
     build:
@@ -26,3 +27,4 @@ services:
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
+      - CERT_SERVER_UTL=http://cert-server:5000

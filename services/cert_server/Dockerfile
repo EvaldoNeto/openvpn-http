@@ -7,9 +7,7 @@ RUN wget -P /usr/src/certs https://github.com/OpenVPN/easy-rsa/releases/download
     rm EasyRSA-3.0.4.tgz
 COPY ./vars /usr/src/certs/EasyRSA-3.0.4
 WORKDIR /usr/src/certs/EasyRSA-3.0.4
-RUN ./easyrsa init-pki && \
-    ./easyrsa --batch build-ca nopass
-
+RUN ./easyrsa init-pki
 
 # installing python app
 FROM python:3.7.2-alpine

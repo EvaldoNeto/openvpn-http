@@ -6,7 +6,7 @@ from flask import Blueprint, request
 from flask_restful import Resource, Api
 from werkzeug.utils import secure_filename
 
-from project.api.cert_gen import EasyRSA
+from project.api.utils import file_check, allowed_file
 
 cert_server_blueprint = Blueprint('cert-server', __name__)
 api = Api(cert_server_blueprint)
@@ -22,16 +22,6 @@ class CertPing(Resource):
 
 
 class Certificates(Resource):
-    """
-    Upload method based on the following tutorial
-    https://www.roytuts.com/python-flask-file-upload-example/
-    """
-    ALLOWED_EXTENSIONS = set(['req', 'ovpn'])
-
-    def allowed_file(self, filename):
-        return '.' in filename and filename.rsplit('.', 1)[1].lower() \
-            in self.ALLOWED_EXTENSIONS
-
     def post(self):
         response_object = {
             'status': 'fail',
@@ -42,26 +32,20 @@ class Certificates(Resource):
             return response_object, 400
         file = request.files['file']
         if file.filename == '':
-            response_object['message'] = 'No file selected to upload'
+            response_object['message'] = 'No file selected for upload'
             return response_object, 400
-        if file and self.allowed_file(file.filename):
+        if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join('/usr/certs', filename))
-            mopa = EasyRSA().cert_gen(filename.rsplit('.')[0])
-            response_object['message'] = 'File successfully uploaded.'
-            response_object['message'] = mopa
             response_object['status'] = 'success'
+            if file_check(filename):
+                response_object['message'] = filename + ' file already exists'
+                return response_object, 200
+            file.save(os.path.join(os.environ.get('REQ_PATH'), filename))
+            response_object['message'] = filename + ' file uploaded'
             return response_object, 200
         else:
-            response_object['message'] = 'Only .req files allowed'
-            return response_object, 401
-
-    def get(self):
-        response_object = {
-            'status': 'success',
-            'message': 'Oh yeah!'
-        }
-        return response_object, 200
+            response_object['message'] = 'Not a valid file'
+            return response_object, 400
 
 
 api.add_resource(CertPing, '/cert/ping')

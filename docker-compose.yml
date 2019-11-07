@@ -7,7 +7,7 @@ services:
       context:  ./services/cert_server
       dockerfile: Dockerfile
     volumes:
-      - ./data:/usr/certs
+      - ./services/cert_server/data:/usr/certs
     ports:
       - 5001:5000
     environment:
@@ -27,3 +27,4 @@ services:
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
+      - CERT_SERVER_UTL=http://cert-server:5000

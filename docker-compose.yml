@@ -14,6 +14,7 @@ services:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
       - SECRET_KEY=$SECRET_KEY
+      - OVPN_SERVER_URL=http://ovpn-server:5000
 
   ovpn-server:
     build:

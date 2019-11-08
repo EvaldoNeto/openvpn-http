@@ -7,6 +7,7 @@ from flask_restful import Resource, Api
 from werkzeug.utils import secure_filename
 
 from project.api.utils import file_check, allowed_file
+from project.api.cert_manage import create_req
 
 ovpn_server_blueprint = Blueprint('ovpn-server', __name__)
 api = Api(ovpn_server_blueprint)
@@ -48,5 +49,19 @@ class Certificates(Resource):
             return response_object, 400
 
 
+class CreateCert(Resource):
+    def post(self):
+        response_object = {
+            'status': 'fail',
+            'message': 'Invalid payload'
+        }
+        post_data = request.get_json()
+        if not post_data:
+            return response_object, 400
+        certname = post_data.get('certname')
+        return create_req(certname)
+
+
 api.add_resource(OvpnPing, '/ovpn/ping')
 api.add_resource(Certificates, '/ovpn/certs')
+api.add_resource(CreateCert, '/ovpn/create_crt')

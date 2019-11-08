@@ -7,6 +7,8 @@ class BaseConfig:
     DEBUG = False
     TESTING = False
     UPLOAD_FOLDER = '/usr/src/certs'
+    PKI_PATH = os.environ.get('EASYRSA_PKI')
+    REQ_PATH = os.environ.get('REQ_PATH')
     CERT_SERVER_URL = os.environ.get('CERT_SERVER_URL')
 
 

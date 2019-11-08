@@ -14,14 +14,14 @@ class TestOvpnServer(BaseTestCase):
             req_path = os.environ.get('REQ_PATH')
             response = self.client.post(
                 '/cert/upload',
-                data={'file': (io.BytesIO(b'test'), 'test_cert.req')}
+                data={'file': (io.BytesIO(b'test'), 'test_cert.ovpn')}
             )
             data = json.loads(response.data.decode())
             self.assertIn('file uploaded', data['message'])
             self.assertEqual(response.status_code, 200)
-            self.assertTrue(os.path.isfile(req_path + '/test_cert.req'))
-            os.remove(req_path + '/test_cert.req')
-            self.assertFalse(os.path.isfile(req_path + '/test_cert.req'))
+            self.assertTrue(os.path.isfile(req_path + '/test_cert.ovpn'))
+            os.remove(req_path + '/test_cert.ovpn')
+            self.assertFalse(os.path.isfile(req_path + '/test_cert.ovpn'))
 
     def test_certificate_no_file(self):
         """

@@ -19,6 +19,8 @@ def create_req(file_name):
         'status': 'fail',
         'message': 'Invalid payload'
     }
+    if len(file_name.split('.')) != 1:
+        return response_object, 400
     if file_check(file_name + '.req'):
         response_object['status'] = 'success'
         response_object['message'] = file_name + '.req already exists'
@@ -36,4 +38,4 @@ def create_req(file_name):
     headers = {'content_type': 'multipart/form-data'}
     files = {'file': content}
     resp = requests.post(url=url, files=files, headers=headers)
-    return resp
+    return resp.text, resp.status_code

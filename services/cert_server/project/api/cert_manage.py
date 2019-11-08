@@ -11,6 +11,10 @@ from shutil import copy2
 
 
 def create_ca():
+    """
+    Generates ca.crt and ca.key files and uploads ca.crt file
+    to ovpn-server
+    """
     response_object = {
         'status': 'fail',
         'message': 'Invalid payload.'
@@ -31,4 +35,35 @@ def create_ca():
     content = ('ca.crt', open(pki_path + '/ca.crt'), 'multipart/form-data')
     files = {'file': content}
     resp = requests.post(url=url, files=files)
-    return resp
+    return resp.text, resp.status_code
+
+
+def create_crt(file_name):
+    """
+    Generates .crt files from .req files coming from ovpn-server
+    and send the .crt files to ovpn-server
+    """
+    response_object = {
+        'status': 'fail',
+        'message': 'Invalid payload'
+    }
+    name, ext = file_name.split('.')
+    if ext != 'req':
+        return response_object, 400
+    req_resp = EasyRSA().import_req(name)
+    if 'Fail' in req_resp:
+        response_object['message'] = f'Could not import {file_name}'
+        response_object['detail'] = str(req_resp)
+        return response_object, 400
+    sign_resp = EasyRSA().sign_req(name)
+    if 'Fail' in sign_resp:
+        response_object['message'] = f'Could not generate {name}.crt'
+    pki_path = current_app.config['PKI_PATH']
+    req_path = current_app.config['REQ_PATH']
+    copy2(pki_path + f'/issued/{name}.crt', req_path)
+    url = current_app.config['OVPN_SERVER_URL'] + '/ovpn/certs'
+    content = (f'{name}.crt', open(f'{req_path}/{name}.crt'))
+    headers = {'content_type': 'multipart/form-data'}
+    files = {'file': content}
+    resp = requests.post(url=url, files=files, headers=headers)
+    return resp.text, resp.status_code

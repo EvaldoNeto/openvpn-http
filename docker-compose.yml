@@ -27,4 +27,4 @@ services:
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
-      - CERT_SERVER_UTL=http://cert-server:5000
+      - CERT_SERVER_URL=http://cert-server:5000

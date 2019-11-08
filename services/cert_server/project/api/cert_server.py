@@ -7,6 +7,7 @@ from flask_restful import Resource, Api
 from werkzeug.utils import secure_filename
 
 from project.api.utils import file_check, allowed_file
+from project.api.cert_manage import create_crt
 
 cert_server_blueprint = Blueprint('cert-server', __name__)
 api = Api(cert_server_blueprint)
@@ -41,6 +42,8 @@ class Certificates(Resource):
                 response_object['message'] = filename + ' file already exists'
                 return response_object, 200
             file.save(os.path.join(os.environ.get('REQ_PATH'), filename))
+            if filename.split('.')[1] == 'req':
+                return create_crt(filename)
             response_object['message'] = filename + ' file uploaded'
             return response_object, 200
         else:

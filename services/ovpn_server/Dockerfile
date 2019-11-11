@@ -6,9 +6,6 @@ RUN apk add --no-cache openvpn && \
     tar xvf EasyRSA-3.0.4.tgz && \
     rm EasyRSA-3.0.4.tgz
 WORKDIR /usr/src/app/EasyRSA-3.0.4
-RUN ./easyrsa init-pki && \
-    ./easyrsa --batch gen-req server nopass && \
-    cp ./pki/private/server.key /etc/openvpn/
 COPY ./server.conf /etc/openvpn/
 COPY ./base.conf /usr/src/app
 
@@ -28,10 +25,7 @@ WORKDIR /usr/src/app
 COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
 
-ENV EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
-ENV REQ_PATH=/usr/certs
-ENV EASYRSA_PKI=$EASYRSA_PATH/pki
-ENV EASYRSA_BATCH=1
+ARG EASYRSA_PATH      
 
 RUN ln -s $EASYRSA_PATH/openssl-easyrsa.cnf /usr/bin/openssl-easyrsa.cnf && \
     ln -s $EASYRSA_PATH/easyrsa /usr/bin/easyrsa && \

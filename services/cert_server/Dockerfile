@@ -7,7 +7,6 @@ RUN wget -P /usr/src/certs https://github.com/OpenVPN/easy-rsa/releases/download
     rm EasyRSA-3.0.4.tgz
 COPY ./vars /usr/src/certs/EasyRSA-3.0.4
 WORKDIR /usr/src/certs/EasyRSA-3.0.4
-RUN ./easyrsa init-pki
 
 # installing python app
 FROM python:3.7.2-alpine
@@ -29,10 +28,7 @@ RUN pip install -r requirements.txt
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 
-ENV EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
-ENV REQ_PATH=/usr/certs
-ENV EASYRSA_PKI=$EASYRSA_PATH/pki
-ENV EASYRSA_BATCH=1
+ARG EASYRSA_PATH      
 
 RUN ln -s $EASYRSA_PATH/openssl-easyrsa.cnf /usr/bin/openssl-easyrsa.cnf && \
     ln -s $EASYRSA_PATH/easyrsa /usr/bin/easyrsa && \

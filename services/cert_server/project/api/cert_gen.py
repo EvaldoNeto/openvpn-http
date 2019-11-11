@@ -1,31 +1,43 @@
 # services/cert_server/project/apit/cert_gen.py
 
 import subprocess
-import os
+
+from flask import current_app
+from shutil import rmtree
 
 
 class EasyRSA:
-    req_path = os.environ.get('REQ_PATH')
 
     def __init__(self):
         pass
 
-    def req_gen(self, file_name):
+    def init_pki(self):
+        cmd = f'easyrsa --batch init-pki'
+        try:
+            subprocess.check_output(cmd.split(' '))
+        except subprocess.CalledProcessError as e:
+            return f'Failed to generate pki folder {str(e)}'
+        return 'Success, pki folder created'
+
+    def rm_pki(self):
+        pki_path = current_app.config['PKI_PATH']
+        rmtree(pki_path)
+
+    def req_gen(self, filename):
         """
         Generates the requisition file with the name being the given file_name
         :param file_name: - :return: string
         """
-        cmd = 'easyrsa --batch gen-req ' + file_name + ' nopass'
+        cmd = f'easyrsa --batch --req-cn={filename} gen-req {filename} nopass'
         try:
             subprocess.check_output(cmd.split(' '))
         except subprocess.CalledProcessError as e:
-            return 'Fail to generate .req file for ' + file_name + ' ' + \
+            return 'Fail to generate .req file for ' + filename + ' ' + \
                     str(e)
-        return 'Success, .req file for ' + file_name + ' created.'
+        return 'Success, .req file for ' + filename + ' created.'
 
     def import_req(self, file_name):
-        cmd = 'easyrsa --batch import-req ' + self.req_path + '/' + \
-              file_name + '.req ' + file_name
+        cmd = f'easyrsa --batch import-req {file_name}.req'
         try:
             subprocess.check_output(cmd.split(' '))
         except subprocess.CalledProcessError as e:
@@ -45,7 +57,7 @@ class EasyRSA:
         Generates the crt file with the name being the given file_name
         :param file_name: - :return: string
         """
-        cmd = 'easyrsa --batch sign-req client ' + file_name
+        cmd = f'easyrsa --batch sign-req client {file_name}'
         try:
             subprocess.check_output(cmd.split(' '))
         except subprocess.CalledProcessError as e:

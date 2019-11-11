@@ -1,10 +1,12 @@
 import sys
 import unittest
 import coverage
+import os
 
 from flask.cli import FlaskGroup
 
 from project import create_app
+from project.api.cert_gen import EasyRSA
 
 COV = coverage.coverage(
     branch=True,
@@ -42,6 +44,29 @@ def test():
         return 0
     sys.exit(result)
 
+@cli.command('create_folders')
+def create_folders():
+    """Creates de folders to store .crt files and .ovpn files"""
+    ovpn_folder = app.config['OVPN_CERTS_PATH']
+    crt_folder = app.config['CRT_CERTS_PATH']
+    os.mkdir(ovpn_folder)
+    os.mkdir(crt_folder)
+
+@cli.command('start')
+def start():
+    """
+    Creates all the necessary folders and files for the 
+    service to run properly
+    """
+    ovpn_folder = app.config['OVPN_CERTS_PATH']
+    crt_folder = app.config['CRT_CERTS_PATH']
+    pki_path = app.config['PKI_PATH']
+    if not os.path.isdir(ovpn_folder):
+        os.mkdir(ovpn_folder)
+    if not os.path.isdir(crt_folder):
+        os.mkdir(crt_folder)
+    if not os.path.isdir(pki_path):
+        EasyRSA().init_pki()
 
 if __name__ == "__main__":
     cli()

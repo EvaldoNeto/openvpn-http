@@ -4,6 +4,8 @@ import os
 import json
 import io
 
+from flask import current_app
+
 from project.tests.base import BaseTestCase
 
 
@@ -11,17 +13,21 @@ class TestOvpnServer(BaseTestCase):
 
     def test_certificates(self):
         with self.client:
-            req_path = os.environ.get('REQ_PATH')
+            pki_path = current_app.config['PKI_PATH']
             response = self.client.post(
                 '/cert/upload',
-                data={'file': (io.BytesIO(b'test'), 'test_cert.ovpn')}
+                data={
+                    'file': (io.BytesIO(b'test'), 'test_cert.req'),
+                    'cert': 'False'
+                },
+                content_type='multipart/form-data'
             )
             data = json.loads(response.data.decode())
             self.assertIn('file uploaded', data['message'])
             self.assertEqual(response.status_code, 200)
-            self.assertTrue(os.path.isfile(req_path + '/test_cert.ovpn'))
-            os.remove(req_path + '/test_cert.ovpn')
-            self.assertFalse(os.path.isfile(req_path + '/test_cert.ovpn'))
+            self.assertTrue(os.path.isfile(f'{pki_path}/reqs/test_cert.req'))
+            os.remove(f'{pki_path}/reqs/test_cert.req')
+            self.assertFalse(os.path.isfile(f'{pki_path}/reqs/test_cert.req'))
 
     def test_certificate_no_file(self):
         """

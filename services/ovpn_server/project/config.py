@@ -8,8 +8,10 @@ class BaseConfig:
     TESTING = False
     UPLOAD_FOLDER = '/usr/src/certs'
     PKI_PATH = os.environ.get('EASYRSA_PKI')
-    REQ_PATH = os.environ.get('REQ_PATH')
     CERT_SERVER_URL = os.environ.get('CERT_SERVER_URL')
+    OVPN_CERTS_PATH = os.environ.get('OVPN_FILES')
+    CRT_CERTS_PATH = os.environ.get('CRT_FILES')
+    OPENVPN = os.environ.get('OPENVPN')
 
 
 class DevelopmentConfig(BaseConfig):

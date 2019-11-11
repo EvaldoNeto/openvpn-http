@@ -1,17 +1,20 @@
-# services/cert_server/project/apit/cert_manage.py
+# services/ovpn_server/project/apit/cert_manage.py
 
 import os
 
+from flask import current_app
+
 
 def allowed_file(file_name):
-    ext = set(['req', 'ovpn', 'crt'])
+    ext = set(['ovpn', 'crt'])
     return '.' in file_name and file_name.rsplit('.', 1)[1].lower() in ext
 
 
 def file_check(filename):
     """
     Checks if the certificate file already exists
-    The file_name must contain the extension
+    THe file_name must contain the extension
     """
-    req_path = os.environ.get('REQ_PATH')
-    return os.path.isfile(req_path + '/' + filename) and allowed_file(filename)
+    pki_path = current_app.config['PKI_PATH']
+    return os.path.isfile(f'{pki_path}/reqs/{filename}') and \
+        allowed_file(filename)

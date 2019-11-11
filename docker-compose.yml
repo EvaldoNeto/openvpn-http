@@ -6,8 +6,11 @@ services:
     build:
       context:  ./services/cert_server
       dockerfile: Dockerfile
+      args:
+        - EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
     volumes:
-      - ./services/cert_server/data:/usr/certs
+      - ./services/cert_server/certs:/usr/share/certs
+      - ./services/cert_server:/usr/src/app
     ports:
       - 5001:5000
     environment:
@@ -15,16 +18,26 @@ services:
       - APP_SETTINGS=project.config.DevelopmentConfig
       - SECRET_KEY=$SECRET_KEY
       - OVPN_SERVER_URL=http://ovpn-server:5000
+      - EASYRSA_PKI=/usr/share/certs/pki
+
 
   ovpn-server:
     build:
       context: ./services/ovpn_server
       dockerfile: Dockerfile
+      args:
+        - EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
     volumes:
-      - ./services/ovpn_server/data:/usr/certs
+      - ./services/ovpn_server/certs:/usr/share/certs
+      - ./services/ovpn_server:/usr/src/app
     ports:
       - 5002:5000
+      - 1194:1194
     environment:
       - FLASK_ENV=development
       - APP_SETTINGS=project.config.DevelopmentConfig
       - CERT_SERVER_URL=http://cert-server:5000
+      - EASYRSA_PKI=/usr/share/certs/pki
+      - OVPN_FILES=/usr/share/certs/ovpn
+      - CRT_FILES=/usr/share/certs/crt
+      - OPENVPN=/etc/openvpn

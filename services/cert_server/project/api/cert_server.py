@@ -1,13 +1,11 @@
 # services/cert_server/project/api/users.py
 
-import os
-
 from flask import Blueprint, request
 from flask_restful import Resource, Api
 from werkzeug.utils import secure_filename
 
-from project.api.utils import file_check, allowed_file
-from project.api.cert_manage import create_crt
+from project.api.utils import allowed_file
+from project.api.cert_manage import create_crt, save_file
 
 cert_server_blueprint = Blueprint('cert-server', __name__)
 api = Api(cert_server_blueprint)
@@ -32,18 +30,20 @@ class Certificates(Resource):
             response_object['message'] = 'No file part'
             return response_object, 400
         file = request.files['file']
+        cert_gen = True
+        if request.form.get('cert') == 'False':
+            cert_gen = False
         if file.filename == '':
             response_object['message'] = 'No file selected for upload'
             return response_object, 400
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            response_object['status'] = 'success'
-            if file_check(filename):
-                response_object['message'] = filename + ' file already exists'
-                return response_object, 200
-            file.save(os.path.join(os.environ.get('REQ_PATH'), filename))
-            if filename.split('.')[1] == 'req':
+            resp, stat = save_file(file)
+            if stat != 200:
+                return resp, stat
+            if filename.split('.')[1] == 'req' and cert_gen:
                 return create_crt(filename)
+            response_object['status'] = 'success'
             response_object['message'] = filename + ' file uploaded'
             return response_object, 200
         else:

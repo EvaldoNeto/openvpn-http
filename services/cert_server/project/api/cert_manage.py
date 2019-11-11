@@ -1,13 +1,13 @@
 # services/cert_server/project/apit/cert_manage.py
 
 import requests
+import os
 
 from flask import current_app
+from werkzeug.utils import secure_filename
 
 from project.api.cert_gen import EasyRSA
 from project.api.utils import file_check
-
-from shutil import copy2
 
 
 def create_ca():
@@ -28,9 +28,6 @@ def create_ca():
         response_object['message'] = ca_resp
         return response_object, 400
     pki_path = current_app.config['PKI_PATH']
-    req_path = current_app.config['REQ_PATH']
-    copy2(pki_path + '/ca.crt', req_path)
-    copy2(pki_path + '/private/ca.key', req_path)
     url = current_app.config['OVPN_SERVER_URL'] + '/ovpn/certs'
     content = ('ca.crt', open(pki_path + '/ca.crt'), 'multipart/form-data')
     files = {'file': content}
@@ -59,11 +56,37 @@ def create_crt(file_name):
     if 'Fail' in sign_resp:
         response_object['message'] = f'Could not generate {name}.crt'
     pki_path = current_app.config['PKI_PATH']
-    req_path = current_app.config['REQ_PATH']
-    copy2(pki_path + f'/issued/{name}.crt', req_path)
     url = current_app.config['OVPN_SERVER_URL'] + '/ovpn/certs'
-    content = (f'{name}.crt', open(f'{req_path}/{name}.crt'))
+    content = (f'{name}.crt', open(f'{pki_path}/reqs/{name}.crt'))
     headers = {'content_type': 'multipart/form-data'}
     files = {'file': content}
     resp = requests.post(url=url, files=files, headers=headers)
     return resp.text, resp.status_code
+
+
+def check_pki():
+    pki_path = current_app.config['PKI_PATH']
+    return os.path.isdir(pki_path)
+
+
+def save_file(file):
+    filename = secure_filename(file.filename)
+    response_object = {
+        'status': 'fail',
+        'message': 'Invalid payload'
+    }
+    pki_path = current_app.config['PKI_PATH']
+    if not check_pki():
+        response_object['message'] = 'pki folder does not exist,' + \
+            ' please initiate it'
+        return response_object, 400
+    if file_check(filename):
+        response_object['message'] = filename + ' file already exists'
+        return response_object, 400
+    paths = {
+        'req': file.save(os.path.join(f'{pki_path}/reqs', filename))
+    }
+    paths[filename.split('.')[1]]
+    response_object['status'] = 'success'
+    response_object['message'] = f'File {filename} saved'
+    return response_object, 200

@@ -10,7 +10,10 @@ inspect() {
 }
 
 # run unit and integrations tests
+export SECRET_KEY="my_precious"
 docker-compose up -d --build
+docker-compose exec ovpn-server python manage.py start
+docker-compose exec cert-server easyrsa --batch init-pki
 docker-compose exec cert-server python manage.py test
 inspect $? cert_server
 docker-compose exec cert-server flake8 project

@@ -52,12 +52,16 @@ class EasyRSA:
             return 'Fail to build ca certificate ' + str(e)
         return 'Success, ca certificate created'
 
-    def sign_req(self, file_name):
+    def sign_req(self, file_name, is_server=False):
         """
         Generates the crt file with the name being the given file_name
         :param file_name: - :return: string
         """
-        cmd = f'easyrsa --batch sign-req client {file_name}'
+        cmd = ''
+        if is_server:
+            cmd = f'easyrsa --batch sign-req server {file_name}'
+        else:
+            cmd = f'easyrsa --batch sign-req client {file_name}'
         try:
             subprocess.check_output(cmd.split(' '))
         except subprocess.CalledProcessError as e:

@@ -50,9 +50,6 @@ def save_file(file):
         'status': 'fail',
         'message': 'Invalid payload'
     }
-    ovpn_path = current_app.config['OVPN_CERTS_PATH']
-    crt_path = current_app.config['CRT_CERTS_PATH']
-    openvpn = current_app.config['OPENVPN']
     if not check_pki():
         response_object['message'] = 'pki folder does not exist,' + \
             ' please initiate it'
@@ -61,10 +58,11 @@ def save_file(file):
         response_object['message'] = filename + ' file already exists'
         return response_object, 400
     paths = {
-        'ovpn': file.save(os.path.join(ovpn_path, filename)),
-        'crt': file.save(os.path.join(crt_path, filename)),
-        'ca': file.save(os.path.join(openvpn, filename))
+        'ovpn': current_app.config['OVPN_CERTS_PATH'],
+        'crt': current_app.config['CRT_CERTS_PATH'],
+        'ca': current_app.config['OPENVPN']
     }
+    file.save(os.path.join(paths[filename.split('.')[1]], filename))
     if filename == 'ca.crt':
         paths['ca']
     else:

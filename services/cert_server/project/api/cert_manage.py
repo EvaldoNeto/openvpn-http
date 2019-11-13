@@ -47,21 +47,19 @@ def create_crt(file_name):
     name, ext = file_name.split('.')
     if ext != 'req':
         return response_object, 400
-    req_resp = EasyRSA().import_req(name)
-    if 'Fail' in req_resp:
-        response_object['message'] = f'Could not import {file_name}'
-        response_object['detail'] = str(req_resp)
+    pki_path = current_app.config['PKI_PATH']
+    if not os.path.isfile(f'{pki_path}/reqs/{file_name}'):
+        response_object['message'] = f'File {file_name} not found'
         return response_object, 400
     sign_resp = EasyRSA().sign_req(name)
     if 'Fail' in sign_resp:
         response_object['message'] = f'Could not generate {name}.crt'
-    pki_path = current_app.config['PKI_PATH']
     url = current_app.config['OVPN_SERVER_URL'] + '/ovpn/certs'
-    content = (f'{name}.crt', open(f'{pki_path}/reqs/{name}.crt'))
+    content = (f'{name}.crt', open(f'{pki_path}/issued/{name}.crt'))
     headers = {'content_type': 'multipart/form-data'}
     files = {'file': content}
     resp = requests.post(url=url, files=files, headers=headers)
-    return resp.text, resp.status_code
+    return resp.text.strip("\n\r"), resp.status_code
 
 
 def check_pki():
@@ -84,8 +82,9 @@ def save_file(file):
         response_object['message'] = filename + ' file already exists'
         return response_object, 400
     paths = {
-        'req': file.save(os.path.join(f'{pki_path}/reqs', filename))
+        'req': f'{pki_path}/reqs'
     }
+    file.save(os.path.join(paths[filename.split('.')[1]], filename))
     paths[filename.split('.')[1]]
     response_object['status'] = 'success'
     response_object['message'] = f'File {filename} saved'

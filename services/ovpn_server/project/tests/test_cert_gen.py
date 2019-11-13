@@ -96,3 +96,28 @@ class TestCertGen(BaseTestCase):
         self.assertFalse(os.path.isfile(f'{pki_path}/reqs/{filename}.req'))
         self.assertFalse(os.path.isfile(f'{pki_path}/private/{filename}.key'))
         self.assertFalse(os.path.isfile(f'{pki_path}/private/ca.key'))
+
+    def test_sign_cert_server(self):
+        pki_path = current_app.config['PKI_PATH']
+        filename = 'test_server'
+        EasyRSA().build_ca()
+        EasyRSA().req_gen(filename)
+        resp = EasyRSA().sign_req(filename, is_server=True)
+        self.assertIn('Success', resp)
+        self.assertTrue(os.path.isfile(f'{pki_path}/issued/{filename}.crt'))
+        self.assertTrue(os.path.isfile(f'{pki_path}/ca.crt'))
+        self.assertTrue(os.path.isfile(f'{pki_path}/reqs/{filename}.req'))
+        self.assertTrue(os.path.isfile(f'{pki_path}/private/{filename}.key'))
+        self.assertTrue(os.path.isfile(f'{pki_path}/private/ca.key'))
+        resp = EasyRSA().revoke(filename)
+        os.remove(f'{pki_path}/issued/{filename}.crt')
+        os.remove(f'{pki_path}/ca.crt')
+        os.remove(f'{pki_path}/private/ca.key')
+        os.remove(f'{pki_path}/private/{filename}.key')
+        os.remove(f'{pki_path}/reqs/{filename}.req')
+        self.assertIn('Success', resp)
+        self.assertFalse(os.path.isfile(f'{pki_path}/issued/{filename}.crt'))
+        self.assertFalse(os.path.isfile(f'{pki_path}/ca.crt'))
+        self.assertFalse(os.path.isfile(f'{pki_path}/reqs/{filename}.req'))
+        self.assertFalse(os.path.isfile(f'{pki_path}/private/{filename}.key'))
+        self.assertFalse(os.path.isfile(f'{pki_path}/private/ca.key'))

@@ -95,6 +95,11 @@ class EasyRSA:
         file_name = file_name.split('.')[0]
         output = open(f'/usr/share/certs/ovpn/{file_name}.ovpn', 'w')
         output.write(ovpn_content)
+        crt_file.close()
+        key_file.close()
+        ca_file.close()
+        base_conf_file.close()
+        output.close()
 
     def revoke(self, filename):
         cmd = f'easyrsa --batch revoke {filename}'

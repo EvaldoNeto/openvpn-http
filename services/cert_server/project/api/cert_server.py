@@ -5,7 +5,7 @@ from flask_restful import Resource, Api
 from werkzeug.utils import secure_filename
 
 from project.api.utils import allowed_file
-from project.api.cert_manage import create_crt, save_file
+from project.api.cert_manage import create_crt, save_file, transfer_crt
 
 cert_server_blueprint = Blueprint('cert-server', __name__)
 api = Api(cert_server_blueprint)
@@ -24,7 +24,7 @@ class Certificates(Resource):
     def post(self):
         response_object = {
             'status': 'fail',
-            'message': 'Invalid payload.'
+            'message': 'Invalid payload'
         }
         if 'file' not in request.files:
             response_object['message'] = 'No file part'
@@ -51,5 +51,20 @@ class Certificates(Resource):
             return response_object, 400
 
 
+class TransferCrt(Resource):
+    def post(self):
+        response_object = {
+            'status': 'fail',
+            'message': 'Invalid payload'
+        }
+        post_data = request.get_json()
+        if not post_data:
+            response_object['message'] = 'TransferCrt Invalid payload'
+            return response_object, 400
+        certname = post_data.get('certname')
+        return transfer_crt(certname)
+
+
 api.add_resource(CertPing, '/cert/ping')
 api.add_resource(Certificates, '/cert/upload')
+api.add_resource(TransferCrt, '/cert/transfer')

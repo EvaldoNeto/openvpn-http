@@ -1,5 +1,21 @@
 #!/bin/bash
 
+ovpn_certs=./services/ovpn_server/certs
+cert_certs=./services/cert_server/certs
+
+if [ -d "$ovpn_certs" ]; then
+    echo "$ovpn_certs exist"
+else
+	echo "creating $ovpn_certs"
+	`mkdir $ovpn_certs`
+fi
+
+if [ -d "$cert_certs" ]; then
+    echo "$cert_certs exist"
+else
+	echo "creating $cert_certs"
+	`mkdir $cert_certs`
+fi
 
 fails=""
 
@@ -12,9 +28,11 @@ inspect() {
 # run unit and integrations tests
 export SECRET_KEY="my_precious"
 docker-compose up -d --build
-docker-compose exec ovpn-server python manage.py start
+docker-compose exec ovpn-server python manage.py set_env
 docker-compose exec cert-server easyrsa --batch init-pki
-docker-compose exec cert-server python manage.py test
+docker-compose exec cert-server python manage.py build_ca
+docker-compose exec ovpn-server python manage.py create_server_cert
+docker-compose exec cert-server python manage.py set_server_crt
 inspect $? cert_server
 docker-compose exec cert-server flake8 project
 inspect $? cert-server-lint

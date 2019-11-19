@@ -33,7 +33,7 @@ RUN ln -s $EASYRSA_PATH/openssl-easyrsa.cnf /usr/bin/openssl-easyrsa.cnf && \
     ln -s /usr/bin/python3.6 /usr/bin/python
 
 COPY . /usr/src/app
-COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
-RUN chmod +x /usr/src/app/entrypoint.sh
+COPY ./entrypoint-prod.sh /usr/src/app/entrypoint-prod.sh
+RUN chmod +x /usr/src/app/entrypoint-prod.sh
 
-CMD ["/usr/src/app/entrypoint.sh"]
+CMD ["/usr/src/app/entrypoint-prod.sh"]

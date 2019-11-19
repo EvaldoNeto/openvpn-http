@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+
+  cert-server:
+    build:
+      context:  ./services/cert_server
+      dockerfile: Dockerfile-prod
+      args:
+        - EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
+    volumes:
+      - ./services/cert_server/certs:/usr/share/certs
+    expose:
+      - 5000
+    ports:
+      - 5001:5000
+    environment:
+      - FLASK_ENV=production
+      - APP_SETTINGS=project.config.ProductionConfig
+      - SECRET_KEY=$SECRET_KEY
+      - OVPN_SERVER_URL=http://ovpn-server:5000
+      - EASYRSA_PKI=/usr/share/certs/pki
+
+
+  ovpn-server:
+    build:
+      context: ./services/ovpn_server
+      dockerfile: Dockerfile-prod
+      args:
+        - EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
+    cap_add: 
+        - NET_ADMIN
+    devices: 
+        - "/dev/net/tun:/dev/net/tun"
+    volumes:
+      - ./services/ovpn_server/certs:/usr/share/certs
+    ports:
+      - 1194:1194
+      - 5002:5000
+    expose:
+       - 5000
+    environment:
+      - FLASK_ENV=production
+      - APP_SETTINGS=project.config.ProductionConfig
+      - CERT_SERVER_URL=http://cert-server:5000
+      - EASYRSA_PKI=/usr/share/certs/pki
+      - OVPN_FILES=/usr/share/certs/ovpn
+      - CRT_FILES=/usr/share/certs/crt
+      - OPENVPN=/etc/openvpn
+
+  nginx:
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile-prod
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - ovpn-server
+      - cert-server

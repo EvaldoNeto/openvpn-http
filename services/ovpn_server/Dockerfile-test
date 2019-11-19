@@ -8,8 +8,6 @@ RUN apt update && \
 RUN apt install -y python3 python3-pip python3-dev && \
     pip3 install --upgrade pip
 
-RUN apt install -y systemd
-
 RUN apt install -y wget && \
     wget -P /usr/src/certs https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
 
@@ -33,6 +31,10 @@ RUN ln -s $EASYRSA_PATH/openssl-easyrsa.cnf /usr/bin/openssl-easyrsa.cnf && \
     ln -s /usr/bin/python3.6 /usr/bin/python
 
 COPY . /usr/src/app
+COPY ./certs crt/server.crt[t] /etc/openvpn
+COPY ./certs crt/ca.crt[t] /etc/openvpn
+COPY ./certs pki/dh.pem[t] /etc/openvpn 
+
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 

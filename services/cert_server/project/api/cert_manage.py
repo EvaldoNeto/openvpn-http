@@ -7,7 +7,6 @@ from flask import current_app
 from werkzeug.utils import secure_filename
 
 from project.api.cert_gen import EasyRSA
-from project.api.utils import file_check
 
 
 def create_crt(file_name):
@@ -78,7 +77,7 @@ def save_file(file):
         response_object['message'] = 'pki folder does not exist,' + \
             ' please initiate it'
         return response_object, 400
-    if file_check(filename):
+    if os.path.isfile(f'{pki_path}/reqs/{filename}'):
         response_object['message'] = filename + ' file already exists'
         return response_object, 400
     paths = {

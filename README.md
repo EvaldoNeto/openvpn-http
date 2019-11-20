@@ -65,8 +65,30 @@ To stop the services run:
 ```
 docker-compose down
 ```
+# generating the certificates
 
-So far this will start the services and the ovpn server. To generate the .ovpn files call the following endpoint in the following order:
+## using the script
+You can call the script ./generate_ovpn.sh to create the .ovpn file
+
+```
+./generate_ovpn.sh your_file_name
+``` 
+
+This command will create a file called your_file_name.ovpn and download it to your current folder
+
+If you already created the file and just want to download, you use ./download_ovpn.sh
+
+```
+./download_ovpn.sh your_file_name
+``` 
+
+This will download a file named your_file_name.ovpn to your current folder
+
+IMPORTANT: remember to have the SECRET_KEY declared on your enviroment and change the url on the script to match yours
+
+
+## manually
+To generate the .ovpn files manually you can call the following endpoints in the following order:
 
 - /ovpn/create_req
 - /ovpn/transfer_req
@@ -91,6 +113,8 @@ After the first time you executed the start.sh script you can just use docker-co
 ```
 docker-compose -f docker-compose-prod.yml up -d --build
 ```
+
+or with curl just like in the download_ovpn.sh script
 
 # re-build
 

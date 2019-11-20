@@ -1,6 +1,6 @@
 # services/cert_server/project/api/users.py
 
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app, send_file
 from flask_restful import Resource, Api
 from werkzeug.utils import secure_filename
 
@@ -10,6 +10,22 @@ from project.api.cert_manage import create_req, save_file, initiate_ovpn,\
 
 ovpn_server_blueprint = Blueprint('ovpn-server', __name__)
 api = Api(ovpn_server_blueprint)
+
+
+class OvpnFile(Resource):
+
+    method_decorators = {'get': [authenticate_restful]}
+
+    def get(self, resp, filename):
+        ovpn_files_path = current_app.config['OVPN_CERTS_PATH']
+        response_object = {
+            'status': 'fail',
+            'message': f'{filename} file not found'
+        }
+        try:
+            return send_file(f'{ovpn_files_path}/{filename}')
+        except Exception:
+            return response_object, 401
 
 
 class OvpnPing(Resource):
@@ -40,9 +56,9 @@ class Certificates(Resource):
             return response_object, 400
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            resp, stat = save_file(file)
+            response, stat = save_file(file)
             if stat != 200:
-                return resp, stat
+                return response, stat
             if filename == 'ca.crt':
                 response_object['status'] = 'success'
                 response_object['message'] = 'ca.crt uploaded to ovpn-server'
@@ -51,7 +67,7 @@ class Certificates(Resource):
                 return initiate_ovpn()
             elif '.crt' in filename and 'test' not in filename:
                 return generate_ovpn_file(filename.split('.')[0])
-            return resp, stat
+            return response, stat
         else:
             response_object['message'] = 'Not a valid file'
             return response_object, 400
@@ -95,3 +111,4 @@ api.add_resource(OvpnPing, '/ovpn/ping')
 api.add_resource(Certificates, '/ovpn/certs')
 api.add_resource(CreateReq, '/ovpn/create_req')
 api.add_resource(TransferReq, '/ovpn/transfer_req')
+api.add_resource(OvpnFile, '/ovpn/file/<filename>')

@@ -23,7 +23,7 @@ def create_req(file_name):
     if len(file_name.split('.')) != 1:
         return response_object, 400
     pki_path = current_app.config['PKI_PATH']
-    if os.path.isfile(f'{pki_path}/reqs/{file_name}.crt'):
+    if os.path.isfile(f'{pki_path}/reqs/{file_name}.req'):
         response_object['status'] = 'fail'
         response_object['message'] = file_name + '.req already exists'
         return response_object, 200
@@ -89,15 +89,19 @@ def initiate_ovpn():
 
 
 def generate_ovpn_file(filename):
-    crt_path = f'{current_app.config["CRT_CERTS_PATH"]}/{filename}.crt'
-    key_path = f'{current_app.config["PKI_PATH"]}/private/{filename}.key'
-    ca_path = f'{current_app.config["OPENVPN"]}/ca.crt'
-    EasyRSA().ovpn_gen(crt_path, key_path, ca_path)
-    ovpn_path = current_app.config['OVPN_CERTS_PATH']
     response_object = {
         'status': 'fail',
         'message': f'Could not create {filename}'
     }
+    crt_path = f'{current_app.config["CRT_CERTS_PATH"]}/{filename}.crt'
+    key_path = f'{current_app.config["PKI_PATH"]}/private/{filename}.key'
+    ca_path = f'{current_app.config["OPENVPN"]}/ca.crt'
+    ovpn_path = current_app.config['OVPN_CERTS_PATH']
+    if os.path.isfile(f'{ovpn_path}/{filename}.ovpn'):
+        response_object['status'] = 'fail'
+        response_object['message'] = f'{filename}.ovpn already exists'
+        return response_object, 400
+    EasyRSA().ovpn_gen(crt_path, key_path, ca_path)
     if os.path.isfile(f'{ovpn_path}/{filename}.ovpn'):
         response_object['status'] = 'success'
         response_object['message'] = f'{filename} created'

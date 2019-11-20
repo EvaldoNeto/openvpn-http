@@ -80,7 +80,8 @@ def initiate_ovpn():
         response_object['message'] = 'pki folder does not exist,' + \
             ' please initiate it'
         return response_object, 400
-    EasyRSA().gen_dh()
+    if not os.path.isfile(f'{pki_path}/dh.pem'):
+        EasyRSA().gen_dh()
     copy2(f'{pki_path}/dh.pem', openvpn_path)
     copy2(f'{pki_path}/private/server.key', openvpn_path)
     response_object['status'] = 'success'

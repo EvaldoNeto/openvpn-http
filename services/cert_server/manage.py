@@ -7,6 +7,7 @@ from flask.cli import FlaskGroup
 
 from project import create_app
 from project.api.cert_manage import create_ca, transfer_crt
+from project.api.cert_gen import EasyRSA
 
 from shutil import rmtree
 
@@ -51,6 +52,17 @@ def build_ca():
     """Creates ca.crt and sends it to ovpn-server"""
     resp = create_ca()
     print(f'Creating ca certificate \n {resp}')
+
+@cli.command('set_env')
+def set_env():
+    """
+    Creates all the necessary folders and files for the 
+    service to run properly
+    """
+    pki_path = app.config['PKI_PATH']
+    if not os.path.isdir(pki_path):
+        print('initializing pki')
+        EasyRSA().init_pki()
 
 @cli.command('set_server_crt')
 def set_server_crt():

@@ -45,9 +45,9 @@ export SECRET_KEY=c0f6a2bef78cfabd0bafce4221d5d3444a3c5b4c39a5765b
  After that just run start.sh script:
 
 ```
-./start.sh dev 	# for development enviroment
-				# or
-./start.sh prod # for production enviroment
+./start.sh dev start   # for development enviroment
+                       # or
+./start.sh prod start  # for production enviroment
 ```
 
 It will start the services, initiate the pki's, create server.crt, server.key, dh.pem and ca.crt files and put them on the openvpn folder
@@ -118,7 +118,7 @@ or with curl just like in the download_ovpn.sh script
 
 # re-build
 
-If you re-build the ovpn-server remember to set the configurations and restart the service
+If you re-build the ovpn-server using docker-compose remember to set the configurations and restart the service
 
 ```
 docker-compose exec ovpn-server python manage.py conf_ovpn_server
@@ -126,6 +126,19 @@ docker-compose exec ovpn-server service openvpn start
 ```
 
 This command will copy server.crt, server.key, dh.pem and ca.crt files to the openvpn folder.
+
+## start script
+
+You can also use the start.sh script
+
+```
+./start.sh dev rebuild   # for development enviroment
+                         # or
+./start.sh prod rebuild  # for production enviroment
+
+```
+
+This will rebuild all services and erase all certificates, so be sure you want to do that before you run it. If you want to build without losing any certificate run the script with 'start' instead of 'build'
 
 # testing
 

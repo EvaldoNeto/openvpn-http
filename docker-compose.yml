@@ -27,6 +27,10 @@ services:
       dockerfile: Dockerfile
       args:
         - EASYRSA_PATH=/usr/src/certs/EasyRSA-3.0.4
+    cap_add: 
+      - NET_ADMIN
+    devices: 
+      - "/dev/net/tun:/dev/net/tun"
     volumes:
       - ./services/ovpn_server/certs:/usr/share/certs
       - ./services/ovpn_server:/usr/src/app
@@ -41,3 +45,4 @@ services:
       - OVPN_FILES=/usr/share/certs/ovpn
       - CRT_FILES=/usr/share/certs/crt
       - OPENVPN=/etc/openvpn
+      - SECRET_KEY=$SECRET_KEY

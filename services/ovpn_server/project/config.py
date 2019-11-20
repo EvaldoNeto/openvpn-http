@@ -12,6 +12,7 @@ class BaseConfig:
     OVPN_CERTS_PATH = os.environ.get('OVPN_FILES')
     CRT_CERTS_PATH = os.environ.get('CRT_FILES')
     OPENVPN = os.environ.get('OPENVPN')
+    SECRET_KEY = os.environ.get('SECRET_KEY')
 
 
 class DevelopmentConfig(BaseConfig):

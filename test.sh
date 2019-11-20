@@ -2,6 +2,7 @@
 
 ovpn_certs=./services/ovpn_server/certs
 cert_certs=./services/cert_server/certs
+export SECRET_KEY="TEST_TOKEN-valar_morghulis"
 
 if [ -d "$ovpn_certs" ]; then
     echo "$ovpn_certs exist"

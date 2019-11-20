@@ -41,12 +41,16 @@ def transfer_crt(filename):
         'message': 'Invalid payload'
     }
     pki_path = current_app.config['PKI_PATH']
+    token = current_app.config['SECRET_KEY']
     if not os.path.isfile(f'{pki_path}/issued/{filename}.crt'):
         response_object['message'] = f'{filename}.crt does not exists'
         return response_object, 400
     url = current_app.config['OVPN_SERVER_URL'] + '/ovpn/certs'
     content = (f'{filename}.crt', open(f'{pki_path}/issued/{filename}.crt'))
-    headers = {'content_type': 'multipart/form-data'}
+    headers = {
+        'content_type': 'multipart/form-data',
+        'Authorization': f'Bearer {token}'
+    }
     files = {'file': content}
     resp = requests.post(url=url, files=files, headers=headers)
     return resp.text, resp.status_code
@@ -97,6 +101,7 @@ def create_ca():
         'message': 'Invalid payload'
     }
     pki_path = current_app.config['PKI_PATH']
+    token = current_app.config['SECRET_KEY']
     if not check_pki():
         response_object['message'] = 'pki folder does not exist,' + \
             ' please initiate it'
@@ -112,7 +117,10 @@ def create_ca():
         return response_object, 400
     url = current_app.config['OVPN_SERVER_URL'] + '/ovpn/certs'
     content = (f'ca.crt', open(f'{pki_path}/ca.crt'))
-    headers = {'content_type': 'multipart/form-data'}
+    headers = {
+        'content_type': 'multipart/form-data',
+        'Authorization': f'Bearer {token}'
+    }
     files = {'file': content}
     resp = requests.post(url=url, files=files, headers=headers)
     return resp.text, resp.status_code

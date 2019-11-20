@@ -30,7 +30,7 @@ inspect() {
 export SECRET_KEY="my_precious"
 docker-compose up -d --build
 docker-compose exec ovpn-server python manage.py set_env
-docker-compose exec cert-server easyrsa --batch init-pki
+docker-compose exec cert-server python manage.py set_env
 docker-compose exec cert-server python manage.py build_ca
 docker-compose exec ovpn-server python manage.py create_server_cert
 docker-compose exec cert-server python manage.py set_server_crt

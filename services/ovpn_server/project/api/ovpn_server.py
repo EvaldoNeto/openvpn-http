@@ -4,7 +4,7 @@ from flask import Blueprint, request
 from flask_restful import Resource, Api
 from werkzeug.utils import secure_filename
 
-from project.api.utils import allowed_file
+from project.api.utils import allowed_file, authenticate_restful
 from project.api.cert_manage import create_req, save_file, initiate_ovpn,\
     generate_ovpn_file, transfer_req
 
@@ -13,6 +13,7 @@ api = Api(ovpn_server_blueprint)
 
 
 class OvpnPing(Resource):
+
     def get(self):
         response_object = {
             'status': 'success',
@@ -22,7 +23,10 @@ class OvpnPing(Resource):
 
 
 class Certificates(Resource):
-    def post(self):
+
+    method_decorators = {'post': [authenticate_restful]}
+
+    def post(self, resp):
         response_object = {
             'status': 'fail',
             'message': 'Invalid payload.'
@@ -54,7 +58,10 @@ class Certificates(Resource):
 
 
 class CreateReq(Resource):
-    def post(self):
+
+    method_decorators = {'post': [authenticate_restful]}
+
+    def post(self, resp):
         response_object = {
             'status': 'fail',
             'message': 'Invalid payload'
@@ -68,7 +75,10 @@ class CreateReq(Resource):
 
 
 class TransferReq(Resource):
-    def post(self):
+
+    method_decorators = {'post': [authenticate_restful]}
+
+    def post(self, resp):
         response_object = {
             'status': 'fail',
             'message': 'Invalid payload'

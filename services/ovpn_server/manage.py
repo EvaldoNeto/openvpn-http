@@ -100,8 +100,8 @@ def conf_ovpn_server():
     print(f'copying ca.crt, server.crt, dh.pem and server.key to {ovpn_path}')
     copy2(f'{crt_folder}/ca.crt', ovpn_path)
     copy2(f'{crt_folder}/server.crt', ovpn_path)
-    copy2(f'{pki}/dh.pem', ovpn_path)
-    copy2(f'{pki}/private/server.key', ovpn_path)
+    copy2(f'{pki_path}/dh.pem', ovpn_path)
+    copy2(f'{pki_path}/private/server.key', ovpn_path)
 
 @cli.command('flush_certs')
 def flush_certs():

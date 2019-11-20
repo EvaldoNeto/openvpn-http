@@ -4,7 +4,7 @@ from flask import Blueprint, request
 from flask_restful import Resource, Api
 from werkzeug.utils import secure_filename
 
-from project.api.utils import allowed_file
+from project.api.utils import allowed_file, authenticate_restful
 from project.api.cert_manage import create_crt, save_file, transfer_crt
 
 cert_server_blueprint = Blueprint('cert-server', __name__)
@@ -21,7 +21,10 @@ class CertPing(Resource):
 
 
 class Certificates(Resource):
-    def post(self):
+
+    method_decorators = {'post': [authenticate_restful]}
+
+    def post(self, resp):
         response_object = {
             'status': 'fail',
             'message': 'Invalid payload'
@@ -52,7 +55,10 @@ class Certificates(Resource):
 
 
 class TransferCrt(Resource):
-    def post(self):
+
+    method_decorators = {'post': [authenticate_restful]}
+
+    def post(self, resp):
         response_object = {
             'status': 'fail',
             'message': 'Invalid payload'

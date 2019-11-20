@@ -49,9 +49,13 @@ def transfer_req(filename):
         response_object['message'] = f'{filename}.req does not exist'
         return response_object, 400
     pki_path = current_app.config['PKI_PATH']
+    token = current_app.config['SECRET_KEY']
     url = current_app.config['CERT_SERVER_URL'] + '/cert/upload'
     content = (f'{filename}.req', open(f'{pki_path}/reqs/{filename}.req'))
-    headers = {'content_type': 'multipart/form-data'}
+    headers = {
+        'content_type': 'multipart/form-data',
+        'Authorization': f'Bearer {token}'
+    }
     files = {'file': content}
     resp = requests.post(url=url, files=files, headers=headers)
     return resp.text, resp.status_code

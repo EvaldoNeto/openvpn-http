@@ -27,7 +27,22 @@ The project structure is based on the Michael Herman course Test-Driven Developm
 
 First be sure to have docker and docker-compose installed, that is the only thing you need.
 
-To start just run the start.sh script as follows:
+To start, first create a token, I usually do it in python as follows:
+
+```
+>>> import binascii
+>>> import os
+>>> binascii.hexlify(os.urandom(24))
+b'c0f6a2bef78cfabd0bafce4221d5d3444a3c5b4c39a5765b'
+```
+
+Export the token to SECRET_KEY:
+
+```
+export SECRET_KEY=c0f6a2bef78cfabd0bafce4221d5d3444a3c5b4c39a5765b
+``` 
+
+ After that just run start.sh script:
 
 ```
 ./start.sh dev 	# for development enviroment
@@ -39,7 +54,8 @@ It will start the services, initiate the pki's, create server.crt, server.key, d
 
 After that you are able to run the tests and call the endpoints.
 
-For production enviroment, for the ovpn server to start you got to run
+For the ovpn server to start you got to run
+
 ```
 docker-compose exec ovpn-server service openvpn start
 ```
@@ -55,6 +71,12 @@ So far this will start the services and the ovpn server. To generate the .ovpn f
 - /ovpn/create_req
 - /ovpn/transfer_req
 - /cert/transfer 
+
+Remember to add an authorization header to all http requests with the token you generated:
+
+```
+headers={'Authorization': 'Bearer YOUR_SECRET_TOKEN'}
+```
 
 To retrieve the .ovpn file run:
 

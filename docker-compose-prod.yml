@@ -21,7 +21,6 @@ services:
       - OVPN_SERVER_URL=http://ovpn-server:5000
       - EASYRSA_PKI=/usr/share/certs/pki
 
-
   ovpn-server:
     build:
       context: ./services/ovpn_server
@@ -47,6 +46,7 @@ services:
       - OVPN_FILES=/usr/share/certs/ovpn
       - CRT_FILES=/usr/share/certs/crt
       - OPENVPN=/etc/openvpn
+      - SECRET_KEY=$SECRET_KEY
 
   nginx:
     build:

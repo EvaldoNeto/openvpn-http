@@ -1,5 +1,6 @@
-url=http://localhost
+url=http://localhost # your server ip or url here
 certname=$1
+SECRET_TOKEN=$SECRET_KEY
 
 generate_post_data()
 {

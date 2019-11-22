@@ -3,7 +3,7 @@ certname=$1
 
 
 download_ovpn(){
-   curl -X GET -H "Authorization: Bearer $SECRET_TOKEN" \
+   curl -X GET -H "Authorization: Bearer $SECRET_KEY" \
 	 "$url:5002/ovpn/file/$certname.ovpn" 2>/dev/null
 }
 
@@ -15,5 +15,5 @@ if [ "$status" = "fail" ]; then
 fi
 
 echo "$certname.ovpn downloaded to current folder"
-echo $response >> "$certname.ovpn"
+echo "$response" >> "$certname.ovpn"
 exit 0

@@ -1,4 +1,4 @@
-url=http://localhost # your server ip or url here
+url=http://18.231.118.115 # your server ip or url here
 certname=$1
 SECRET_TOKEN=$SECRET_KEY
 

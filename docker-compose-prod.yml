@@ -34,7 +34,7 @@ services:
     volumes:
       - ./services/ovpn_server/certs:/usr/share/certs
     ports:
-      - 1194:1194
+      - 443:443
       - 5002:5000
     expose:
        - 5000
